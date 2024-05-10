@@ -1,0 +1,62 @@
+:root {
+	--background: #DFDFDF;
+	--foreground: #202020;
+	--accent: #006489;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #202020;
+		--foreground: #DFDFDF;
+		--accent: #006489;
+	}
+}
+
+body {
+	margin: 0;
+	background-color: var(--background);
+	color: var(--foreground);
+	width: 100vw;
+	height: 100vh;
+}
+
+header {
+	text-align: center;
+	background-color: var(--accent);
+	margin: 0;
+	padding: 1px;
+	border-radius: 10px;
+}
+
+main {
+	text-align: center;
+}
+
+canvas {
+	/* aspect-ratio: 1/1; */
+	width: 7;
+	height: 6;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: red;
+	/* border: 2px solid var(--foreground); */
+	/* margin: 4px; */
+}
+
+@media (max-aspect-ratio: 7/6) {
+	canvas {
+		aspect-ratio: 7/6;
+		width: calc(100vw - 4px);
+		height: calc(100vw * 6/7 - 4px);
+	}
+}
+
+@media (min-aspect-ratio: 7/6) {
+	canvas {
+		aspect-ratio: 7/6;
+		height: calc(100vh - 4px);
+		width: calc(100vh * 7/6 - 4px);
+	}
+}
