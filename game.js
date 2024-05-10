@@ -14,6 +14,8 @@ let state = "HOME";
 
 let board = [];
 
+let winningTiles = []
+
 let lastX = { x: -1, y: -1 };
 let lastO = { x: -1, y: -1 };
 
@@ -48,6 +50,55 @@ function clear() {
 	ctx.stroke();
 }
 
+function hasWon() {
+	for (let x = 0; x < board.length; x++) {
+		for (let y = 0; y < board[x].length; y++) {
+			if (board[x][y] == "+") {
+				continue;
+			}
+			if (x < board.length - 3 && (
+				board[x][y].toLowerCase() == board[x + 1][y].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x + 2][y].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x + 3][y].toLowerCase())) {
+				winningTiles = [
+					{ x: x, y: y },
+					{ x: x + 1, y: y },
+					{ x: x + 2, y: y },
+					{ x: x + 3, y: y }
+				];
+				return true;
+			}
+
+			if (x < board.length - 3 && y < board[x].length && (
+				board[x][y].toLowerCase() == board[x + 1][y + 1].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x + 2][y + 2].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x + 3][y + 3].toLowerCase())) {
+				winningTiles = [
+					{ x: x, y: y },
+					{ x: x + 1, y: y + 1 },
+					{ x: x + 2, y: y + 2 },
+					{ x: x + 3, y: y + 3 }
+				];
+				return true;
+			}
+
+			if (x < board.length - 3 && y < board[x].length && (
+				board[x][y].toLowerCase() == board[x][y + 1].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x][y + 2].toLowerCase() &&
+				board[x][y].toLowerCase() == board[x][y + 3].toLowerCase())) {
+				winningTiles = [
+					{ x: x, y: y },
+					{ x: x, y: y + 1 },
+					{ x: x, y: y + 2 },
+					{ x: x, y: y + 3 }
+				];
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 function drawTiles() {
 	for (let w = 0; w < board.length; w++) {
 		for (let h = 0; h < board[w].length; h++) {
@@ -66,7 +117,7 @@ function drawTiles() {
 			if (board[w][h] == 'o') drawSmallO(w, h);
 		}
 	}
-	var a,b = -1;
+	var a, b = -1;
 	if (state == "PLAYERX") {
 		a = lastX.x;
 		b = lastX.y;
@@ -85,6 +136,10 @@ function drawTiles() {
 				drawBlocker(x, y);
 			}
 		}
+	}
+
+	for (var i = 0; i < winningTiles.length; i++) {
+		drawWinner(winningTiles[i].x, winningTiles[i].y);
 	}
 }
 
@@ -149,6 +204,16 @@ function drawBlocker(x, y) {
 
 	ctx.lineWidth = scale * 0.2;
 	ctx.strokeStyle = "#FF000099";
+
+	ctx.rect(x * scale + scale * 0.1, y * scale + scale * 0.1, scale * 0.8, scale * 0.8)
+	ctx.stroke();
+}
+
+function drawWinner(x, y) {
+	ctx.beginPath();
+
+	ctx.lineWidth = scale * 0.2;
+	ctx.strokeStyle = "#00FF0099";
 
 	ctx.rect(x * scale + scale * 0.1, y * scale + scale * 0.1, scale * 0.8, scale * 0.8)
 	ctx.stroke();
@@ -227,7 +292,10 @@ canvas.addEventListener('click', function (e) {
 		board[c.x][c.y] = "X";
 		lastX.x = c.x;
 		lastX.y = c.y;
-		state = "PLAYERO";
+		if (hasWon())
+			state = "WINNERX";
+		else
+			state = "PLAYERO";
 	}
 	else if (state == "PLAYERO") {
 		if (lastO.x > -1)
@@ -235,17 +303,20 @@ canvas.addEventListener('click', function (e) {
 		board[c.x][c.y] = "O";
 		lastO.x = c.x;
 		lastO.y = c.y;
-		state = "PLAYERX";
+		if (hasWon())
+			state = "WINNERO";
+		else
+			state = "PLAYERX";
 	}
 
 	drawTiles();
 }, false);
 
-canvas.addEventListener('mousemove', function (e) {
-	let c = getCoords(e);
+// canvas.addEventListener('mousemove', function (e) {
+// 	let c = getCoords(e);
 
-	drawTiles();
-})
+// 	drawTiles();
+// })
 
 updateCanvasSize();
 
